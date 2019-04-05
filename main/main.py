@@ -8,6 +8,7 @@ from termcolor import *
 import os
 import time
 #-----------------------------
+os.system("clear")
 
 print(colored("Hello World, SFTP server explorer by Davi M. Silva.", "blue", attrs=["bold"]))
 host     = input("IP Address: ")
