@@ -34,6 +34,7 @@ with pysftp.Connection(host=host, username=username, password=passwd, cnopts=cno
             #clear
             #cd
             #ls
+            #exit
 
             print(colored(" -> copy  [folder, file] > Shortcut: cp - Copy the file/folder."                            , "cyan"))
             print(colored(" -> clear                > Shortcut: cl - Clear the screen."                                , "cyan"))
@@ -43,6 +44,7 @@ with pysftp.Connection(host=host, username=username, password=passwd, cnopts=cno
 
         if console == "clear" or console == "cl":
             os.system("clear")
+
 
         if "copy" in console.split() or "cp" in console.split(): #Copia arquivos
             #-1 é a flag para o último index em uma lista
@@ -58,20 +60,17 @@ with pysftp.Connection(host=host, username=username, password=passwd, cnopts=cno
                             print("Copying " + colored(itens, "red") + "...")
                         sftp.get_r(fileToCopy, os.getcwd())
                     else:
-                        sftp.get("./" + fileToCopy, callback=teste(0, 100))
+                        sftp.get("./" + fileToCopy)
 
             except Exception as err:
                 print("Something went wrong: " + err)
 
             print(f"'" + colored(fileToCopy, "red") + "' downloaded successfully.")
 
+
         if "cd" in console.split(): #Se mover nos diretórios do FTP
             try:
                 arq = console.split()
-
-                #print("console.split: " + str(arq))
-                #print(len(arq))
-
 
                 if  ".." in arq:
                     dirr = sftp.pwd
@@ -81,20 +80,27 @@ with pysftp.Connection(host=host, username=username, password=passwd, cnopts=cno
                         dir = dir.replace(arq_split[-1] + "/", "")
                         sftp.cwd(dir)
                 else:
-                    if not arq[-1] in sftp.listdir(dir):
-                        print(f"Folder '{console.split()[-1]}' not found.")
-                    else:
-                        #NOTE: Ele tem que juntar os outros index do split, tirando o primeiro, pois, ele é o comando.
-                        nomeArquivo = console.split()[1]
-                        dir += nomeArquivo + "/"
+                    #NOTE: Ele tem que juntar os outros index do split, tirando o primeiro, pois, ele é o comando.
+                    comando = console.split()[0]
+                    pasta = console.replace(comando + " ", "")
 
-                        sftp.cwd(dir)
+                    dir += pasta + "/"
+                    #print("DIRETÓRIO: " + dir)
+
+                    if " " in pasta:
+                        print("é uma pasta com 2 nomes")
+
+                    sftp.cwd(dir)
 
             except FileNotFoundError:
-                print(f"Folder '{console.split()[-1]}' not found.")
+                comando = console.split()[0]
+                pasta = console.replace(comando + " ", "")
+
+                print(f"Folder '{pasta}' not found.")
 
             except Exception as err:
                 print("Something went wrong: " + (err))
+
 
         if console.lower() == "ls": #Listar os diretórios
             print("")
@@ -106,7 +112,7 @@ with pysftp.Connection(host=host, username=username, password=passwd, cnopts=cno
                 else:
                     print("{}   file - {}".format(colored(cout, "white", attrs=["reverse"]), dirs))
             print("")
-            #print(sftp.listdir(dir))
+
 
         if console.lower() == "exit":
             print("Exiting...")
