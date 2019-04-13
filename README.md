@@ -4,17 +4,13 @@ With this script you can access SFTP servers from a terminal in linux (compatibl
 ### HOW WORKS?
 This script has a very used and very reliable library for accessing SFTP servers called [pysftp](https://pysftp.readthedocs.io/en/release_0.2.9/).
 
-### DOCKERFILE
-You will need install docker to build the script:
-```bash
- $ sudo apt-get install docker.io
+### INSTALL AND DEPENDENCIES
+To execute the script run this in sudo at the terminal:
 ```
-and then, you can run the docker builder with this command:
-```bash
-$ docker build -t sftp-explorer .
+# sh startup.sh
 ```
-and execute...
-```bash
-$ docker run -ti sftp-explorer
+and then, execute "sftp.sh" that will be created after execute the script above:
 ```
-If necessary you will need to do in sudo.
+# sh sftp.sh
+```
+That's it!
