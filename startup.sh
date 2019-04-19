@@ -9,7 +9,11 @@ fileName="sftp.sh"
 #-eq é igual a "=="
 if [ $ifstate=="Y" ];
 then
+  #if docker is not installed, it install and then...
   apt-get install docker.io
+
+  # ...build again...
+  docker build -t sftp-explorer .
 else
   echo "Program installer canceled."
 fi
