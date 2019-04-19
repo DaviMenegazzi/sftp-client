@@ -12,7 +12,7 @@ import gnureadline # Converting the arrow keys to the commands
 os.system("clear")
 
 try:
-    print(colored("Hello World, SFTP server explorer by Davi M. Silva.", "blue", attrs=["bold"]))
+    print(colored("Hello World, SFTP server client by Davi M. Silva.", "blue", attrs=["bold"]))
     host     = input("IP Address: ")
     username = input("  Username: ")
     passwd   = input("  Password: ")
