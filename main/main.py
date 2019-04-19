@@ -12,10 +12,10 @@ import gnureadline # Converting the arrow keys to the commands
 os.system("clear")
 
 try:
-    print(colored("Hello World, SFTP server client by Davi M. Silva.", "blue", attrs=["bold"]))
-    host     = input("IP Address: ")
-    username = input("  Username: ")
-    passwd   = input("  Password: ")
+    print(colored("Hello World | SFTP Server Client | Davi M. Silva.", "blue", attrs=["bold"]))
+    host     = input("IP Address |: ")
+    username = input("  Username |: ")
+    passwd   = input("  Password |: ")
 except KeyboardInterrupt:
     print("\nExiting...")
     exit()
@@ -23,11 +23,17 @@ except KeyboardInterrupt:
 h = []
 def history(command):
     if command == "history" or command == "hist":
-        print(f"History: ({len(h)} itens)")
+        print(f"History: ({len(h)} items)")
         for i in range(0, len(h)):
             print(f"{i + 1} -- " + h[i])
     else:
         print("Command not found.")
+
+def instructions():
+    print("")
+    print(colored("ㅤ", "magenta", attrs=["reverse"]) + " | This color represents the folders.")
+    print(colored("ㅤ", "white", attrs=["reverse"])   + " | This color represents the files.  ")
+    print("")
 
 print("Connecting...")
 cnopts = pysftp.CnOpts()
@@ -52,12 +58,19 @@ with pysftp.Connection(host=host, username=username, password=passwd, cnopts=cno
                 #cd
                 #ls
                 #exit
+                #hist
+                #inst
 
-                print(colored(" -> copy  [folder, file] > Shortcut: cp - Copy the file/folder."                            , "cyan"))
-                print(colored(" -> clear                > Shortcut: cl - Clear the screen."                                , "cyan"))
-                print(colored(" -> cd    [folder]       - Change the current working directory to the folder specified."   , "cyan"))
-                print(colored(" -> ls                   - List all the files and folders of the current working directory.", "cyan"))
-                print(colored(" -> exit                 - Exit from SFTP explorer."                                        , "cyan"))
+                print(colored(" -> copy  [folder, file] > Shortcut: cp - Copy the file/folder."                                , "cyan"))
+                print(colored(" -> clear                > Shortcut: cl - Clear the screen."                                    , "cyan"))
+                print(colored(" -> cd    [folder]       - Change the current working directory to the folder specified."       , "cyan"))
+                print(colored(" -> ls                   - List all the files and folders of the current working directory."    , "cyan"))
+                print(colored(" -> history              > Shortcut: hist - List all the commands that have been executed."     , "cyan"))
+                print(colored(" -> instructions         > Shortcut: inst - Show the instructions about the files and folders." , "cyan"))
+                print(colored(" -> exit                 - Exit from SFTP Client."                                              , "cyan"))
+
+            if console == "instructions" or console == "inst":
+                instructions()
 
             if console == "clear" or console == "cl":
                 os.system("clear")
