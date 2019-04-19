@@ -85,13 +85,17 @@ with pysftp.Connection(host=host, username=username, password=passwd, cnopts=cno
                     comando = console.split()[0]
                     pasta = console.replace(comando + " ", "")
 
-                    dir += pasta + "/"
-                    #print("DIRETÓRIO: " + dir)
+                    if not pasta in sftp.listdir(dir):
+                        print(f"Folder '{pasta}' not found.")
+                        pass
+                    else:
+                        dir += pasta + "/"
+                        #print("DIRETÓRIO: " + dir)
 
-                    if " " in pasta:
-                        print("é uma pasta com 2 nomes")
+                        if " " in pasta:
+                            print("é uma pasta com 2 nomes")
 
-                    sftp.cwd(dir)
+                        sftp.cwd(dir)
 
             except FileNotFoundError:
                 comando = console.split()[0]
