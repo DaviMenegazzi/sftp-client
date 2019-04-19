@@ -7,6 +7,7 @@ import pysftp
 from termcolor import *
 import os
 import time
+import gnureadline # Converting the arrow keys to the commands
 #-----------------------------
 os.system("clear")
 
@@ -16,8 +17,17 @@ try:
     username = input("  Username: ")
     passwd   = input("  Password: ")
 except KeyboardInterrupt:
-    print("Exiting...")
+    print("\nExiting...")
     exit()
+
+h = []
+def history(command):
+    if command == "history" or command == "hist":
+        print(f"History: ({len(h)} itens)")
+        for i in range(0, len(h)):
+            print(f"{i + 1} -- " + h[i])
+    else:
+        print("Command not found.")
 
 print("Connecting...")
 cnopts = pysftp.CnOpts()
@@ -32,6 +42,7 @@ with pysftp.Connection(host=host, username=username, password=passwd, cnopts=cno
     while 1:
         try:
             console = input(colored(sftp.pwd, "green") + ': ')
+            h.append(console)
 
             if console == "?h":
                 print(colored("Avaliable commands: ", attrs=["bold"]))
@@ -51,6 +62,8 @@ with pysftp.Connection(host=host, username=username, password=passwd, cnopts=cno
             if console == "clear" or console == "cl":
                 os.system("clear")
 
+            if console == "hist" or console == "history":
+                history(console)
 
             if "copy" in console.split() or "cp" in console.split(): #Copia arquivos
                 #-1 é a flag para o último index em uma lista
@@ -126,5 +139,5 @@ with pysftp.Connection(host=host, username=username, password=passwd, cnopts=cno
                 exit()
 
         except KeyboardInterrupt:
-            print("Exiting...")
+            print("\nExiting...")
             exit()
