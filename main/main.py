@@ -12,10 +12,10 @@ import gnureadline # Converting the arrow keys to the commands
 os.system("clear")
 
 try:
-    print(colored("Hello World | SFTP Server Client | Davi M. Silva.", "blue", attrs=["bold"]))
-    host     = input("IP Address |: ")
-    username = input("  Username |: ")
-    passwd   = input("  Password |: ")
+    print(colored("SFTP Server Client | Davi M. Silva.", "blue", attrs=["bold"]))
+    host     = input("-- IP Address: ")
+    username = input("--   Username: ")
+    passwd   = input("--   Password: ")
 except KeyboardInterrupt:
     print("\nExiting...")
     exit()
@@ -27,7 +27,13 @@ def history(command):
         for i in range(0, len(h)):
             print(f"{i + 1} -- " + h[i])
     else:
-        print("Command not found.")
+        print("-- Command not found.")
+
+def att_size(remote_dir):
+    dir_struct = sftp.listdir_attr(remote_dir)
+
+    for attr in dir_struct:
+        return attr.st_size
 
 def instructions():
     print("")
@@ -47,8 +53,12 @@ with pysftp.Connection(host=host, username=username, password=passwd, cnopts=cno
     print("\nType '?h' to show the help menu.            ")
     while 1:
         try:
-            console = input(colored(sftp.pwd, "green") + ': ')
-            h.append(console)
+            if os.geteuid() != 0: # Verifica se é root ou não.
+                console = input(colored("(not root)", "white", attrs=["reverse"]) + " " + colored(sftp.pwd, "green") + ': ') #Console onde será executado os comandos
+                h.append(console)
+            else:
+                console = input(colored("(root)", "white", attrs=["reverse"]) + " " + colored(sftp.pwd, "green") + ': ') #Console onde será executado os comandos
+                h.append(console)
 
             if console == "?h":
                 print(colored("Avaliable commands: ", attrs=["bold"]))
@@ -83,7 +93,7 @@ with pysftp.Connection(host=host, username=username, password=passwd, cnopts=cno
                 fileToCopy = console.split()[-1]
                 try:
                     if not fileToCopy in sftp.listdir(dir):
-                        print("File not found.")
+                        print("-- File not found.")
                     else:
 
                         if sftp.isdir(fileToCopy):
@@ -95,7 +105,7 @@ with pysftp.Connection(host=host, username=username, password=passwd, cnopts=cno
                             sftp.get("./" + fileToCopy)
 
                 except Exception as err:
-                    print("Something went wrong: " + err)
+                    print("-- Something went wrong: " + err)
 
                 print(f"'" + colored(fileToCopy, "red") + "' downloaded successfully.")
 
@@ -103,21 +113,24 @@ with pysftp.Connection(host=host, username=username, password=passwd, cnopts=cno
             if "cd" in console.split(): #Se mover nos diretórios do FTP
                 try:
                     arq = console.split()
-
                     if  ".." in arq:
-                        dirr = sftp.pwd
-                        arq_split = dirr.split("/")
+                        if dir == "/":
+                            print("-- You are in the root folder.")
+                            pass
+                        else:
+                            dirr = sftp.pwd
+                            arq_split = dirr.split("/")
 
-                        if arq_split[-1] in dirr:
-                            dir = dir.replace(arq_split[-1] + "/", "")
-                            sftp.cwd(dir)
+                            if arq_split[-1] in dirr:
+                                dir = dir.replace(arq_split[-1] + "/", "")
+                                sftp.cwd(dir)
                     else:
                         #NOTE: Ele tem que juntar os outros index do split, tirando o primeiro, pois, ele é o comando.
                         comando = console.split()[0]
                         pasta = console.replace(comando + " ", "")
 
                         if not pasta in sftp.listdir(dir):
-                            print(f"Folder '{pasta}' not found.")
+                            print(f"-- Folder '{pasta}' not found.")
                             pass
                         else:
                             dir += pasta + "/"
@@ -129,11 +142,10 @@ with pysftp.Connection(host=host, username=username, password=passwd, cnopts=cno
                     comando = console.split()[0]
                     pasta = console.replace(comando + " ", "")
 
-                    print(f"Folder '{pasta}' not found.")
+                    print(f"-- Folder '{pasta}' not found.")
 
                 except Exception as err:
-                    print("Something went wrong: " + (err))
-
+                    print("-- Something went wrong: " + (err))
 
             if console.lower() == "ls": #Listar os diretórios
                 print("")
@@ -141,16 +153,20 @@ with pysftp.Connection(host=host, username=username, password=passwd, cnopts=cno
                 for dirs in sftp.listdir(dir):
                     cout += 1
                     if sftp.isdir(dir + dirs + "/"):
-                        print("{} folder - {}".format(colored(cout, "magenta", attrs=["reverse"]), dirs))
+
+                        colored_magenta = colored(cout, "magenta", attrs=["reverse"])
+                        colored_branco  = colored(cout, "white", attrs=["reverse"])
+
+                        print("{} folder - {}".format(colored_magenta, dirs))
                     else:
-                        print("{}   file - {}".format(colored(cout, "white", attrs=["reverse"]), dirs))
+                        print("{}   file - {}".format(colored_branco, dirs))
                 print("")
 
 
             if console.lower() == "exit":
-                print("Exiting...")
+                print("-- Exiting...")
                 exit()
 
         except KeyboardInterrupt:
-            print("\nExiting...")
+            print("\n-- Exiting...")
             exit()
